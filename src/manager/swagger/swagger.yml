@@ -1,0 +1,27 @@
+swagger: "2.0"
+info: {}
+basePath: /v1
+paths:
+  "/container/inspect\t\t[post]":
+    get:
+      tags:
+      - container
+  "/container/list\t\t[post]":
+    get:
+      tags:
+      - container
+  "/image/delete\t\t[post]":
+    get:
+      tags:
+      - image
+      operationId: ImageController.下载镜像
+  "/image/list\t\t[post]":
+    get:
+      tags:
+      - image
+      operationId: ImageController.获取镜像列表
+  "/image/pull\t\t[post]":
+    get:
+      tags:
+      - image
+      operationId: ImageController.下载镜像
