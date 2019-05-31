@@ -3,11 +3,11 @@ package container
 import "github.com/docker/docker/api/types"
 
 type InspectRequest struct {
-	Uuid string `form:"uuid"`
+	Id string `json:"id"`
 }
 
 type InspectResponse struct {
-	Result string `json:"result"`
+	types.ContainerJSON
 }
 
 type ListRequest struct {
