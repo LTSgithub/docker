@@ -1,4 +1,5 @@
-package docker
+package container
+
 
 func Inspect() {
 
