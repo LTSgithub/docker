@@ -8,7 +8,6 @@ type ImageController struct {
 	Controller
 }
 
-// @Title 下载镜像
 // @router /pull		[post]
 func (c *ImageController) Pull() {
 
@@ -21,7 +20,6 @@ func (c *ImageController) Pull() {
 	c.Controller.setOutput(image.Pull(req))
 }
 
-// @Title 下载镜像
 // @router /delete		[post]
 func (c *ImageController) Delete() {
 
@@ -34,7 +32,6 @@ func (c *ImageController) Delete() {
 	c.Controller.setOutput(image.Delete(req))
 }
 
-// @Title 获取镜像列表
 // @router /list		[post]
 func (c *ImageController) List() {
 
