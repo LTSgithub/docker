@@ -1,68 +1,43 @@
 package container
 
 import (
-	"context"
-	"io"
-	"os"
-
+	engin_container "manager/mzengine/container"
 	"scode"
 	"status"
 
-	"fmt"
-
 	"github.com/astaxie/beego"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
 )
 
 func List(req *ListRequest) (*ListResponse, error) {
 	resp := &ListResponse{}
 
-	cli, err := client.NewClientWithOpts()
+	containerList, err := engin_container.List()
 	if err != nil {
-		beego.Error(err)
+		beego.Error(err.Error())
 		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, err.Error())
 	}
 
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
-	if err != nil {
-		beego.Error(err)
-		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, err.Error())
-	}
-
-	resp.List = containers
+	resp.TotalCount = len(containerList)
+	resp.List = containerList
 
 	return resp, nil
 }
 
 func Inspect(req *InspectRequest) (*InspectResponse, error) {
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
+	resp := &InspectResponse{}
+
+	if req.Id == "" {
+		beego.Error("id is empty")
+		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, "id is empty")
+	}
+
+	ret, err := engin_container.Inspect(req.Id)
 	if err != nil {
-		panic(err)
+		beego.Error(err)
+		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, err.Error())
 	}
 
-	imageName := "bfirsh/reticulate-splines"
+	resp.ContainerJSON = *ret
 
-	out, err := cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
-	if err != nil {
-		panic(err)
-	}
-	io.Copy(os.Stdout, out)
-
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: imageName,
-	}, nil, nil, "")
-	if err != nil {
-		panic(err)
-	}
-
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
-	}
-
-	fmt.Println(resp.ID)
-
-	return &InspectResponse{}, nil
+	return resp, nil
 }

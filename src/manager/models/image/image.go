@@ -1,45 +1,28 @@
 package image
 
 import (
-	"context"
-	"io"
-	"os"
-
-	"scode"
+				"scode"
 	"status"
 
-	engine_image "manager/engine/image"
+	engine_image "manager/mzengine/image"
 
 	"strings"
 
 	"github.com/astaxie/beego"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
-)
+		)
 
 func Pull(req *PullRequest) (*PullResponse, error) {
 	resp := &PullResponse{}
 
-	//if req.Name == "" {
-	//	beego.Error("name is empty")
-	//	return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, "name is empty")
-	//}
-
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
-	if err != nil {
-		beego.Error(err)
-		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, err.Error())
+	if req.Name == "" {
+		beego.Error("docker name is empty")
+		return nil,status.NewStatusDesc(scode.ScodeManagerCommonParameterError,"docker name is empty")
 	}
 
-	out, err := cli.ImagePull(ctx, req.Name, types.ImagePullOptions{})
-	if err != nil {
+	if err := engine_image.Pull(req.Name);err != nil {
 		beego.Error(err)
-		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, err.Error())
+		return nil,status.NewStatusDesc(scode.ScodeManagerCommonParameterError,err.Error())
 	}
-	defer out.Close()
-
-	io.Copy(os.Stdout, out)
 
 	return resp, nil
 }
@@ -86,22 +69,15 @@ func Delete(req *DeleteRequest) (*DeleteResponse, error) {
 func List(req *ListRequest) (*ListResponse, error) {
 	resp := &ListResponse{}
 
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
+
+	imageList, err := engine_image.List()
 	if err != nil {
 		beego.Error(err)
 		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, err.Error())
 	}
 
-	imageList, err := cli.ImageList(ctx, types.ImageListOptions{All: true})
-	if err != nil {
-		beego.Error(err)
-		return nil, status.NewStatusDesc(scode.ScodeManagerCommonParameterError, err.Error())
-	}
-
-	for i := 0; i < len(imageList); i++ {
-		beego.Debug("------------------tag  :%v", imageList[i].RepoTags)
-	}
+	resp.List = imageList
+	resp.TotalCount = len(resp.List)
 
 	return resp, nil
 }

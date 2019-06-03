@@ -1,5 +1,7 @@
 package image
 
+import "github.com/docker/docker/api/types"
+
 type PullRequest struct {
 	Name string `json:"name"`
 }
@@ -19,5 +21,5 @@ type ListRequest struct {
 }
 type ListResponse struct {
 	TotalCount int      `json:"total_count"`
-	List       []string `json:"list"`
+	List       []types.ImageSummary `json:"list"`
 }

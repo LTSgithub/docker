@@ -3,8 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	manager_context "manager/context"
-	"net/http"
+		"net/http"
 	common_scode "scode"
 	common_status "status"
 	"strings"
@@ -38,20 +37,18 @@ type Controller struct {
 	beego.Controller
 
 	MyOutput   Output
-	ManagerCtx *manager_context.Context
 }
 
 //初始化controller.
 func (c *Controller) Init(ctx *context.Context, controllerName, actionName string, app interface{}) {
 	c.Controller.Init(ctx, controllerName, actionName, app)
-	c.ManagerCtx = manager_context.NewContext(ctx)
 
 }
 
 // Prepare 在所有请求之前做操作
 func (c *Controller) Prepare() {
-	beego.Debug(c.ManagerCtx, "Request Begin:-----------------------------------------------------------------------------------")
-	beego.Info(c.ManagerCtx, fmt.Sprintf("Request Begin: uri: %v, method: %v, ClientIP:%v, RemoteAddr:%v",
+	beego.Debug( "Request Begin:-----------------------------------------------------------------------------------")
+	beego.Info( fmt.Sprintf("Request Begin: uri: %v, method: %v, ClientIP:%v, RemoteAddr:%v",
 		c.Ctx.Input.URI(), c.Ctx.Input.Method(), c.GetClientIP(), c.Ctx.Request.RemoteAddr))
 
 	switch c.Ctx.Input.Method() {
@@ -139,7 +136,7 @@ func (c *Controller) Finish() {
 	c.AllowCross() // 允许跨域
 	c.Data["json"] = c.MyOutput
 	c.ServeJSON()
-	beego.Info(c.ManagerCtx, fmt.Sprintf("Controller Finish :uri: %v,  method: %v, ClientIP:%v, RemoteAddr:%v, status code:%v, message:%v, stack:%v",
+	beego.Info(fmt.Sprintf("Controller Finish :uri: %v,  method: %v, ClientIP:%v, RemoteAddr:%v, status code:%v, message:%v, stack:%v",
 		c.Ctx.Input.URI(), c.Ctx.Input.Method(), c.GetClientIP(), c.Ctx.Request.RemoteAddr, c.MyOutput.StatusCode, c.MyOutput.Message, c.MyOutput.Stack))
 }
 
@@ -206,14 +203,13 @@ type BaseController struct {
 //初始化controller.
 func (c *BaseController) Init(ctx *context.Context, controllerName, actionName string, app interface{}) {
 	c.Controller.Init(ctx, controllerName, actionName, app)
-	c.ManagerCtx = manager_context.NewContext(ctx)
 }
 
 // Prepare 在所有请求之前做操作
 // 检测leader, 生成token
 func (c *BaseController) Prepare() {
-	beego.Debug(c.ManagerCtx, "Request Begin:-----------------------------------------------------------------------------------")
-	beego.Info(c.ManagerCtx, fmt.Sprintf("Request Begin: uri: %v, method: %v, ClientIP:%v, RemoteAddr:%v",
+	beego.Debug( "Request Begin:-----------------------------------------------------------------------------------")
+	beego.Info( fmt.Sprintf("Request Begin: uri: %v, method: %v, ClientIP:%v, RemoteAddr:%v",
 		c.Ctx.Input.URI(), c.Ctx.Input.Method(), c.GetClientIP(), c.Ctx.Request.RemoteAddr))
 
 	switch c.Ctx.Input.Method() {
@@ -224,13 +220,13 @@ func (c *BaseController) Prepare() {
 	case httpPatchConst:
 		c.Abort("501")
 	case httpGetConst:
-		beego.Info(c.ManagerCtx, "GET - Request Params: ", c.Ctx.Input.URL())
+		beego.Info("GET - Request Params: ", c.Ctx.Input.URL())
 	case httpPostConst:
-		beego.Info(c.ManagerCtx, "POST - Request Body: ", strings.Replace(string(c.Ctx.Input.RequestBody), "\n", "\\n", -1))
+		beego.Info( "POST - Request Body: ", strings.Replace(string(c.Ctx.Input.RequestBody), "\n", "\\n", -1))
 	case httpOptionConst:
-		beego.Info(c.ManagerCtx, "OPTIONS...")
+		beego.Info( "OPTIONS...")
 	default:
-		beego.Error(c.ManagerCtx, "Method Not Support")
+		beego.Error("Method Not Support")
 	}
 
 }
@@ -241,10 +237,10 @@ func (c *BaseController) Finish() {
 	c.Data["json"] = c.MyOutput
 	c.ServeJSON()
 
-	beego.Info(c.ManagerCtx, fmt.Sprintf("Request End:uri: %v,  method: %v, ClientIP:%v, RemoteAddr:%v, status code:%v, message:%v, stack:%v",
+	beego.Info( fmt.Sprintf("Request End:uri: %v,  method: %v, ClientIP:%v, RemoteAddr:%v, status code:%v, message:%v, stack:%v",
 		c.Ctx.Input.URI(), c.Ctx.Input.Method(), c.GetClientIP(), c.Ctx.Request.RemoteAddr, c.MyOutput.StatusCode, c.MyOutput.Message, c.MyOutput.Stack))
 
-	beego.Info(c.ManagerCtx, "Request End:-----------------------------------------------------------------------------------")
+	beego.Info( "Request End:-----------------------------------------------------------------------------------")
 }
 
 //继承Basecontroller method返回都会调用setOutput
